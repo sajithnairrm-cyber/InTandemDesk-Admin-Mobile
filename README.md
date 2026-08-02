@@ -13,26 +13,19 @@ requires the web repository at runtime.
 
 ## Run it
 
-Needs Node 18+. No dependencies to install.
+**Develop from the web repo.** Its `npm run dev` starts this app too, on
+:8081, and keeps `src/shared/` here in step automatically. That is the
+intended workflow.
+
+To run this repo on its own:
 
 ```bash
 npm run dev
 ```
 
-<http://localhost:8081> — then open your browser's device toolbar and pick a
-phone (375 × 812) to see it as intended.
-
-On localhost the app **opens straight away** — no Google sign-in — with an
-amber banner above the bottom bar saying so. See [Authentication](#authentication).
-
-Other commands:
-
-```bash
-npm run build     # src/ → public/
-npm run serve     # serve public/ without rebuilding
-```
-
----
+<http://localhost:8081> — then use your browser's device toolbar at 375 × 812,
+or better, open it on a real phone over Wi-Fi (the web repo's `dev` prints the
+address).
 
 ## What differs from the web portal
 
@@ -62,13 +55,13 @@ work across portals.
 ```
 src/
 ├── shared/      ← identical to the web repo (see below)
+│   └── itd-admin-auth.js   auth gate + local dev bypass
 └── app/         ← this app only
     ├── index.html          mobile shell
     ├── itd-mobile.css      shell overrides — loaded after itd-core.css
-    ├── itd-mobile-nav.js   bottom bar + sheets
-    └── itd-admin-auth.js   auth gate + local dev bypass
-public/          build output — generated, gitignored
-docs/            architecture, roles spec, firestore.rules (reference)
+    └── itd-mobile-nav.js   bottom bar + sheets
+docs/            build output — COMMITTED, served by GitHub Pages
+documentation/   architecture, roles spec, firestore.rules
 ```
 
 `itd-mobile.css` overrides **layout chrome only**. Cards, tables, KPIs, charts,
@@ -104,11 +97,19 @@ While bypassed, Firestore reads return empty and writes are refused.
 
 ## The shared-core rule
 
-`src/shared/` is duplicated in `InTandemDesk-Admin-Web`. **Two copies in two
-repositories will drift.**
+`src/shared/` (11 files) is duplicated in `InTandemDesk-Admin-Web`. **Two copies in two
+repositories will drift** — it already happened twice in one day with
+`itd-admin-auth.js`, which is why that file now lives in `shared/` rather
+than `app/`.
 
-The repositories have no build or runtime dependency on each other. This is an
-*optional* maintenance aid, run by hand:
+The web repo's `npm run dev` mirrors its `src/shared/` here on every
+save. Edit shared code **there**, not here — anything you change in this repo's
+`src/shared/` is overwritten on the next sync.
+
+If you must edit shared code from this repo, stop the watcher first and use
+`npm run sync:push` to send it the other way.
+
+Manual commands, if the watcher is not running:
 
 ```bash
 npm run check:shared     # do the two repos agree?
@@ -116,30 +117,41 @@ npm run sync:push        # this repo wins
 npm run sync:pull        # the other repo wins
 ```
 
-It expects the two repos cloned as siblings. If they are not, the command exits
-with a message and nothing else is affected. `src/app/` is never synced.
+Both repositories must be cloned as siblings:
 
-**After editing anything in `src/shared/`: push to the other repo, commit both.**
-
----
-
-## Pushing to GitHub
-
-```bash
-git init
+```
+some-folder/
+├── InTandemDesk-Admin-Web/
+└── InTandemDesk-Admin-Mobile/
 ```
 
-```bash
-git add . && git commit -m "Initial commit — Admin/Owner mobile portal"
-```
+`src/app/` is never synced — that is where the two portals are meant to differ:
+
+| | `src/app/` holds |
+|---|---|
+| Web | `index.html` |
+| Mobile | `index.html`, `itd-mobile.css`, `itd-mobile-nav.js` |
+
+**Committing is still manual.** Files staying in sync does not commit them —
+if the mobile repo is never pushed, GitHub Pages keeps serving the old build.
+`npm run ship "message"` in the web repo commits and pushes both together.
+
+## Committing
+
+Both repos are already on GitHub. From the **web** repo:
 
 ```bash
-git remote add origin https://github.com/<you>/InTandemDesk-Admin-Mobile.git
+npm run ship "what changed"
 ```
 
-```bash
-git push -u origin main
-```
+That builds both, then commits and pushes both with the same message —
+skipping either if it has nothing to commit. Use plain `git` if you'd rather
+handle them separately.
+
+`docs/` **is committed** — GitHub Pages serves the app from it. `npm run build`
+regenerates it; never edit it by hand.
+
+Repo: <https://github.com/sajithnairrm-cyber/InTandemDesk-Admin-Mobile>
 
 ---
 
