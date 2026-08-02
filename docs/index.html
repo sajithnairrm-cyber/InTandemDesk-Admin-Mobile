@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0E1418">
+  <title>InTandem Desk · Admin/Owner Mobile</title>
+  <meta name="description" content="InTandem Desk — office operations for InTandem Build, a PMC firm in Hyderabad.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="shared/itd-core.css">
+  <link rel="stylesheet" href="shared/itd-auth.css">
+  <!-- Mobile shell overrides — must load last. -->
+  <link rel="stylesheet" href="itd-mobile.css">
+</head>
+<body>
+
+  <!-- ═══ Authentication gate ═══ Identical contract to the web app:
+       nothing renders until itd-admin-auth.js verifies the account. -->
+  <div id="authGate">
+    <div class="authcard" id="authCard">
+      <div class="authspin"></div>
+      <p class="authmsg">Connecting…</p>
+    </div>
+  </div>
+  <div class="authtoast" id="authToast"></div>
+  <script>
+    window.__itdAuthUp = false;
+    setTimeout(function () {
+      if (window.__itdAuthUp) return;
+      var c = document.getElementById('authCard');
+      if (!c) return;
+      c.className = 'authcard authcard--warn';
+      c.innerHTML = '<div class="authcard__mark"><i class="fa-solid fa-triangle-exclamation"></i></div>' +
+        '<h1>Can\'t start sign-in</h1>' +
+        '<p class="authmsg">The authentication module did not load. Google sign-in needs the page served over http(s).</p>';
+    }, 6000);
+  </script>
+
+  <!-- Boot -->
+  <div class="boot" id="boot">
+    <div class="boot__bars"><span></span><span></span><span></span><span></span></div>
+    <div class="boot__text">Loading…</div>
+  </div>
+
+  <!-- Topbar (compact) -->
+  <header class="topbar">
+    <button class="iconbtn" id="navToggle" aria-label="Menu" hidden><i class="fa-solid fa-bars"></i></button>
+    <a class="brand" href="#/dashboard">
+      <span class="brand__mark">ID</span>
+      <span class="brand__text"><b>InTandem Desk</b></span>
+      <span class="brand__tag">Admin/Owner</span>
+    </a>
+    <div class="topbar__spacer"></div>
+    <span class="stamp" id="dataStamp" hidden><i class="fa-regular fa-clock"></i> <b id="dataStampDate"></b></span>
+    <button class="iconbtn" id="btnSearch" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+    <span class="authuser" id="authUser" hidden></span>
+    <div class="notifwrap">
+      <button class="iconbtn" id="notifBtn" aria-label="Notifications"><i class="fa-regular fa-bell"></i><span class="iconbtn__dot is-hidden" id="notifDot"></span></button>
+      <div class="notifpanel" id="notifPanel" hidden>
+        <div class="notifpanel__head"><b>Notifications</b><button class="btn btn--ghost btn--sm" id="notifClear">Mark all read</button></div>
+        <div class="notifpanel__list" id="notifList"></div>
+      </div>
+    </div>
+    <button class="iconbtn" id="themeBtn" aria-label="Toggle theme"><i class="fa-regular fa-sun"></i></button>
+  </header>
+
+  <!-- Hidden sidebar. The shared view modules write their count badges
+       into these nodes, and the bottom bar mirrors them — so the counts
+       keep working without forking a single line of view code. -->
+  <aside class="sidebar" id="sidebar" aria-hidden="true">
+    <a class="navlink" data-route="schedule" href="#/schedule"><span class="navlink__count" id="cSchedule"></span></a>
+    <a class="navlink" data-route="budget" href="#/budget"><span class="navlink__count" id="cBudget"></span></a>
+    <a class="navlink" data-route="vendors" href="#/vendors"><span class="navlink__count" id="cVendors"></span></a>
+    <a class="navlink" data-route="ledger" href="#/ledger"><span class="navlink__count" id="cLedger"></span></a>
+    <a class="navlink" data-route="settings" href="#/settings"></a>
+    <div class="sidebar__foot">
+      <a class="projminicard" id="miniProj" href="#/projects" hidden>
+        <div class="projminicard__name" id="miniProjName"></div>
+        <div class="settle settle--lg" id="miniSettle" style="--pct:0"><div class="settle__track"><span class="settle__fill"></span></div></div>
+        <div id="miniProjLoc"></div>
+      </a>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- Main — identical section ids to the web app, so every shared
+       view module renders here unchanged. -->
+  <main class="shell">
+    <section class="page" data-page="dashboard" id="page-dashboard"></section>
+    <section class="page" data-page="projects" id="page-projects"></section>
+    <section class="page" data-page="schedule" id="page-schedule"></section>
+    <section class="page" data-page="budget" id="page-budget"></section>
+    <section class="page" data-page="payments" id="page-payments"></section>
+    <section class="page" data-page="vendors" id="page-vendors"></section>
+    <section class="page" data-page="ledger" id="page-ledger"></section>
+    <section class="page" data-page="staff" id="page-staff"></section>
+    <section class="page" data-page="reports" id="page-reports"></section>
+    <section class="page" data-page="news" id="page-news"></section>
+    <section class="page" data-page="settings" id="page-settings"></section>
+  </main>
+
+  <!-- Bottom navigation -->
+  <nav class="botnav" id="botnav" aria-label="Primary"></nav>
+
+  <!-- "More" sheet -->
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="More">
+    <div class="sheet__bg" id="sheetBg"></div>
+    <div class="sheet__card">
+      <div class="sheet__grip" id="sheetGrip"></div>
+      <div id="sheetBody"></div>
+    </div>
+  </div>
+
+  <!-- Search sheet -->
+  <div class="sheet" id="msearch" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="sheet__bg" id="msearchBg"></div>
+    <div class="sheet__card">
+      <div class="sheet__grip" id="msearchClose"></div>
+      <div class="msearch">
+        <div class="search">
+          <div class="search__field"><i class="fa-solid fa-magnifying-glass"></i>
+            <input id="searchInput" type="text" placeholder="Search vendors, budget, ledger…" aria-label="Search">
+          </div>
+          <div class="search__panel" id="searchPanel" hidden></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="fab" id="fabNewProject" hidden><i class="fa-solid fa-plus"></i><span>New Project</span></button>
+
+  <div class="toaster" id="toaster"></div>
+  <div class="modal" id="modal">
+    <div class="modal__card">
+      <div class="modal__head"><h2 id="modalTitle">Details</h2><button class="iconbtn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="modal__body" id="modalBody"></div>
+      <div class="modal__foot" id="modalFoot"></div>
+    </div>
+  </div>
+
+  <!-- ═══ Scripts — same shared core as the web app ═══ -->
+  <script>window.ITD_APP = 'admin';</script>
+  <script src="shared/itd-config.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="shared/itd-data.js"></script>
+  <script src="shared/itd-core.js"></script>
+  <script src="shared/itd-roles.js"></script>
+  <script src="shared/itd-auth-settings.js"></script>
+  <script src="shared/itd-views-1.js"></script>
+  <script src="shared/itd-views-2.js"></script>
+  <script src="shared/itd-views-3.js"></script>
+  <script src="itd-mobile-nav.js"></script>
+  <script>
+    /* Called by itd-admin-auth.js once the account is verified.
+       Deliberately not self-invoking — that is the auth boundary. */
+    window.ITDBoot = function () {
+      var D = window.DATA, m = D.meta;
+      var el = function (id) { return document.getElementById(id); };
+      var set = function (id, v) { var e = el(id); if (e) e.textContent = v; };
+
+      [['cSchedule', D.schedule.length], ['cBudget', D.budget.length],
+       ['cVendors', D.vendors.length], ['cLedger', D.ledger.length]]
+        .forEach(function (p) { set(p[0], p[1] || ''); });
+
+      var stamp = el('dataStamp');
+      if (stamp && m.reportDate) {
+        set('dataStampDate', new Date(m.reportDate)
+          .toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }));
+        stamp.hidden = false;
+      }
+
+      var card = el('miniProj');
+      if (card && m.project) {
+        set('miniProjName', m.project);
+        set('miniProjLoc', m.location || '');
+        var ms = el('miniSettle');
+        if (ms) ms.style.setProperty('--pct', m.balanceBudget
+          ? Math.round(m.balanceReleased / m.balanceBudget * 100) : 0);
+        card.hidden = false;
+      }
+
+      window.App.start();
+      if (window.App.MobileNav) window.App.MobileNav.init();
+    };
+  </script>
+  <script type="module" src="itd-admin-auth.js"></script>
+</body>
+</html>

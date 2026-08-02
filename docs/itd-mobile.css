@@ -1,0 +1,122 @@
+/* ============================================================
+   InTandem Desk — Admin Mobile shell
+
+   Loaded AFTER itd-core.css and overrides only layout chrome:
+   the sidebar becomes a bottom bar, the topbar compacts, and the
+   content well loses its desktop rail offset.
+
+   Everything below the shell — cards, tables, KPIs, charts, forms,
+   pills — is untouched shared CSS. The two apps look like the same
+   product because they are built from the same design system.
+   ============================================================ */
+
+:root{
+  --top:56px;
+  --botnav:62px;
+}
+
+/* ── Topbar: brand + actions only. Search moves into a sheet. ── */
+.topbar{padding:0 .7rem; gap:.4rem}
+.brand__text{display:none}
+.brand__tag{display:inline-flex; margin-left:.4rem}
+.topbar .search{display:none}
+.stamp{display:none !important}
+
+/* ── Kill the desktop rail entirely ─────────────────────────── */
+.sidebar{display:none !important}
+.scrim{display:none !important}
+#navToggle{display:none !important}
+
+.shell{
+  margin-left:0;
+  margin-top:var(--top);
+  padding:1rem .8rem calc(var(--botnav) + 1.6rem);
+  min-height:calc(100vh - var(--top));
+}
+
+/* ── Bottom navigation ──────────────────────────────────────── */
+.botnav{
+  position:fixed; left:0; right:0; bottom:0; z-index:1050;
+  height:calc(var(--botnav) + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  display:grid; grid-template-columns:repeat(5,1fr);
+  background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);
+}
+.botnav__i{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  color:var(--muted); font-size:10px; font-weight:600; letter-spacing:.01em;
+  text-decoration:none; background:none; border:0; cursor:pointer;
+  transition:color .15s var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.botnav__i i{font-size:17px}
+.botnav__i.is-active{color:var(--accent)}
+.botnav__i.is-active i{transform:translateY(-1px)}
+.botnav__n{
+  position:absolute; top:7px; margin-left:20px;
+  min-width:15px; height:15px; padding:0 4px; border-radius:99px;
+  background:var(--accent); color:var(--accent-ink);
+  font-family:var(--mono); font-size:9px; font-weight:700;
+  display:grid; place-items:center;
+}
+
+/* ── "More" sheet ───────────────────────────────────────────── */
+.sheet{position:fixed; inset:0; z-index:1060; display:none}
+.sheet.is-open{display:block}
+.sheet__bg{position:absolute; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(2px)}
+.sheet__card{
+  position:absolute; left:0; right:0; bottom:0;
+  background:var(--surface); border-top:1px solid var(--line);
+  border-radius:var(--r-lg) var(--r-lg) 0 0;
+  padding:.6rem .8rem calc(1rem + env(safe-area-inset-bottom));
+  box-shadow:var(--shadow-lift);
+  animation:sheetUp .26s var(--ease);
+  max-height:76vh; overflow-y:auto;
+}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.sheet__grip{width:36px; height:4px; border-radius:99px; background:var(--line); margin:.35rem auto .8rem}
+.sheet__t{font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--faint); margin:.7rem .3rem .4rem}
+.sheet__link{
+  display:flex; align-items:center; gap:.8rem; padding:.78rem .6rem;
+  border-radius:var(--r-sm); color:var(--ink-2); text-decoration:none; font-size:14px;
+}
+.sheet__link i:first-child{width:20px; text-align:center; color:var(--muted)}
+.sheet__link:active{background:var(--surface-2)}
+.sheet__link.is-active{background:var(--accent-bg); color:var(--accent)}
+.sheet__link.is-active i:first-child{color:var(--accent)}
+.sheet__link .sheet__go{margin-left:auto; font-size:11px; color:var(--faint)}
+
+/* ── Mobile search sheet ────────────────────────────────────── */
+.msearch{padding:.2rem .3rem .6rem}
+.msearch .search__field{width:100%; max-width:none}
+.msearch .search__panel{position:static; margin-top:.6rem; box-shadow:none; border:1px solid var(--line); max-height:46vh}
+
+/* ── Density and touch targets ──────────────────────────────── */
+.phead{margin-bottom:1rem}
+.phead h1{font-size:22px}
+.phead__actions{width:100%; margin-top:.7rem}
+.phead__actions .btn{flex:1; justify-content:center; min-height:42px}
+.btn{min-height:40px}
+.card__body{padding:.95rem}
+.kpi{padding:.9rem}
+.kpi__value{font-size:20px}
+.fab{bottom:calc(var(--botnav) + 1rem)}
+.modal__card{max-height:88vh}
+.toaster{bottom:calc(var(--botnav) + .8rem); left:.7rem; right:.7rem; max-width:none}
+
+/* Tables stay scrollable rather than squashing to unreadable widths. */
+.tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+.dt{min-width:520px}
+
+/* Notification panel becomes full-width on a phone. */
+.notifpanel{position:fixed; left:.6rem; right:.6rem; top:calc(var(--top) + .4rem); width:auto}
+
+@media(min-width:900px){
+  /* Opened on a tablet or desktop: keep it usable, still mobile-shaped. */
+  .shell{max-width:840px; margin-inline:auto}
+}
+
+/* Dev banner sits above the bottom bar rather than over it. */
+#devBanner{bottom:calc(var(--botnav) + env(safe-area-inset-bottom))}
