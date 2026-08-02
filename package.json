@@ -1,0 +1,28 @@
+{
+  "name": "intandemdesk-admin-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "InTandem Desk — Admin/Owner mobile portal. Mobile-first.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "node build.mjs --preview && node serve.mjs",
+    "build": "node build.mjs --preview",
+    "serve": "node serve.mjs",
+    "check:shared": "node sync-shared.mjs check ../InTandemDesk-Admin-Web",
+    "sync:push": "node sync-shared.mjs push ../InTandemDesk-Admin-Web",
+    "sync:pull": "node sync-shared.mjs pull ../InTandemDesk-Admin-Web",
+    "deploy": "node build.mjs && firebase deploy --only hosting:mobile",
+    "deploy:rules": "firebase deploy --only firestore:rules"
+  },
+  "keywords": [
+    "intandem",
+    "pmc",
+    "construction",
+    "firebase",
+    "mobile"
+  ],
+  "license": "UNLICENSED"
+}
