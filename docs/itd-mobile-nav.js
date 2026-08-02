@@ -80,8 +80,10 @@
   function openSheet() { buildSheet(); markActive(); $('#sheet').classList.add('is-open'); }
   function closeSheet() { $('#sheet').classList.remove('is-open'); }
 
-  function openSearch() { $('#msearch').classList.add('is-open'); setTimeout(() => $('#searchInput')?.focus(), 60); }
-  function closeSearch() { $('#msearch').classList.remove('is-open'); }
+  /* The search button opens the command palette directly. It used to open a
+     sheet whose input then opened the palette — two taps for one action, and
+     two search implementations to keep aligned. */
+  function openSearch() { if (App.Command) App.Command.open(); }
 
   /** Highlight the active destination in both the bar and the sheet. */
   function markActive() {
@@ -118,11 +120,9 @@
     $('#sheetBg')?.addEventListener('click', closeSheet);
     $('#sheetGrip')?.addEventListener('click', closeSheet);
     $('#btnSearch')?.addEventListener('click', openSearch);
-    $('#msearchBg')?.addEventListener('click', closeSearch);
-    $('#msearchClose')?.addEventListener('click', closeSearch);
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { closeSheet(); closeSearch(); }
+      if (e.key === 'Escape') closeSheet();
     });
 
     // Rebuild when the role changes — Settings may appear or disappear.
