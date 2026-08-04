@@ -24,7 +24,6 @@
 
   const SECONDARY = [
     { group: 'Delivery', items: [
-      { route: 'schedule', label: 'Schedule', icon: 'fa-list-check' },
       { route: 'budget',   label: 'Budget',   icon: 'fa-sack-dollar' },
       { route: 'payments', label: 'Payments', icon: 'fa-file-invoice-dollar' }
     ]},
