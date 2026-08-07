@@ -5,7 +5,7 @@
   "hosting": [
     {
       "target": "mobile",
-      "public": "public",
+      "public": "docs",
       "ignore": [
         "firebase.json",
         "**/.*",
